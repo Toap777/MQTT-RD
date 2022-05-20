@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sniffer.list.operations;
+package com.sniffer.list.networkOperations;
 
 import com.sniffer.list.sniffer.BrokerInternal;
-import com.sniffer.list.utils.ListReader;
+import com.sniffer.list.json.ResourceCollectionReader;
 import com.sniffer.mqtt.GenericClient;
 import java.util.HashMap;
 import java.util.List;
@@ -18,40 +18,59 @@ import java.util.logging.Logger;
 import org.json.JSONException;
 
 /**
- *
+ * This class provides methods to start and manage periodical timeout checks on connected sniffers.
  * @author eliseu
  */
 public class TimeoutsChecker {
     private final String snifferID;
-    private final String listPath;
+    private final String resourceCollectionPath;
     private final String confBroker;
+    //timer interval defines how often all sniffers get checked in ms.
     private static final int TIMER_INTERVAL = 40 * 1000;
     private static final String TYPE_INTERNET = "internet";
     private Timer timer = new Timer();
     private final Map<String,Boolean> timeouts = new HashMap<>();
     private Map<String,GenericClient> dataBrokers;
 
-    public TimeoutsChecker(String listPath, String snifferID, String confBroker) {
-        this.listPath = listPath;
+    /**
+     * Constructor of TimeoutChecker class
+     * @param resourceCollectionPath resourceCollectionPath
+     * @param snifferID snifferID of associated sniffer
+     * @param confBroker sniffer type of associated sniffer
+     */
+    public TimeoutsChecker(String resourceCollectionPath, String snifferID, String confBroker) {
+        this.resourceCollectionPath = resourceCollectionPath;
         this.snifferID = snifferID;
         this.confBroker = confBroker;
         System.out.println("Configuring the timer responsible by the sniffers timeouts...");
     }
-    
-    public void setSubscritionsActive(Map<String,GenericClient> dataBrokers){
+
+    /**
+     * Set this.dataBrokers
+     * @param dataBrokers dictionary of snifferId - mqtt client (broker) associations
+     */
+    public void setSubscriptionsActive(Map<String,GenericClient> dataBrokers){
         this.dataBrokers = dataBrokers;
     }
-    
+
+    /**
+     * Set the sniffer with pSnifferID to timeout state.
+     * @param pSnifferID id of sniffer to ping to.
+     */
     public void setTimeout(String pSnifferID){
         timeouts.put(pSnifferID, true);
     }
-    
+
+    /**
+     * Cancel the timer to stop all sniffer timeout checks. Then reread all sniffers from resource collection and restart timer at rate {@value TIMER_INTERVAL} ms.
+     * @throws JSONException thrown on error on reading resource collection
+     */
     public void resetTimeouts() throws JSONException{
         timeouts.clear();
         timer.cancel();
         timer.purge();
         
-        ListReader reader = new ListReader(listPath);
+        ResourceCollectionReader reader = new ResourceCollectionReader(resourceCollectionPath);
         List<String[]> sniffersList = reader.getSniffers(snifferID, confBroker);
         for (String[] iterator : sniffersList) {
             // check only in the network
@@ -63,7 +82,11 @@ public class TimeoutsChecker {
         timer = new Timer();
         timer.scheduleAtFixedRate(createTask(), TIMER_INTERVAL, TIMER_INTERVAL);
     }
-    
+
+    /**
+     * This task checks if any sniffer is in timeout state. IF yes it deletes it from resource collection and broadcast delete message to all sniffers in the same network.
+     * @return A timer task that can be easily repeatedly executed.
+     */
     private TimerTask createTask(){
         
         TimerTask task = new TimerTask() {
@@ -75,20 +98,20 @@ public class TimeoutsChecker {
                         String rSnifferID = entry.getKey();
                         Boolean timeoutState = entry.getValue();
 
-                        if (!timeoutState) {
+                        if (!timeoutState) { //maybe this line should be if(timeoutState)
                             System.out.println("\nTimeout in sniffer: " + rSnifferID);
                             System.out.println("Starting delete sniffer operation...");
 
-                            ListReader reader = new ListReader(listPath);
+                            ResourceCollectionReader reader = new ResourceCollectionReader(resourceCollectionPath);
                             String snifferType = reader.getSnifferType(snifferID);
                             String rSnifferNetwork = reader.getSnifferNetwork(rSnifferID);
                             String snifferNetwork = reader.getSnifferNetwork(snifferID);
                             if (snifferType.equals(TYPE_INTERNET) && rSnifferNetwork.equals(snifferNetwork)) {
-                                DataManager manager = new DataManager(listPath, snifferID);
+                                DataManager manager = new DataManager(resourceCollectionPath, snifferID);
                                 manager.deleteDataSniffer(rSnifferID, dataBrokers);
                             }
 
-                            DeleteThings del = new DeleteThings(listPath, snifferID);
+                            DeleteThings del = new DeleteThings(resourceCollectionPath, snifferID);
                             del.deleteSniffer(rSnifferID);
                             timeouts.remove(rSnifferID);
                             del.sendDeleteSniffer(rSnifferID);

@@ -1,5 +1,4 @@
-###### SYSTEM LOG ######
-/registdevice,{
+{
     "device_id": "dev_1",
     "device_type": "broker",
     "attributes": [

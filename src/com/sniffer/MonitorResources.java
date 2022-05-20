@@ -18,47 +18,52 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Logs the program's used heap, stack and average CPU load.
  * @author eliseu
  */
 public class MonitorResources implements Runnable{
     private String logPath = "/src/com/sniffer/resources/machineResources.csv";
+    //sampling rate to query all resource usage indicators
     private static final int SAMPLING_RATE = 2000;
-    
+
+    /**
+     * This class repeatedly polls load Average,Heap,java memory pools (non heap) every {@value SAMPLING_RATE} ms and writes it to this.logPath.
+     */
     @Override
     public void run() {
         try {
             String rootPath = new File("").getAbsolutePath();
             logPath = rootPath.concat(logPath);
+
             File file = new File(logPath);
-            FileWriter fw = new FileWriter(file,false);
+            FileWriter fw = new FileWriter(file, false);
             fw.append("Load Average,Heap,Non Heap\n");
             fw.close();
-            
+
             MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
-            OperatingSystemMXBean operatingSystem = ManagementFactory.getOperatingSystemMXBean();         
-            
+            OperatingSystemMXBean operatingSystem = ManagementFactory.getOperatingSystemMXBean();
+            System.out.println("Logging local machineresources to path: " + logPath);
+
             while (true) {
                 String cpu = String.valueOf(operatingSystem.getSystemLoadAverage() / operatingSystem.getAvailableProcessors());
-                
+
                 MemoryUsage nonHeap = memory.getNonHeapMemoryUsage();
                 String nonHeapUsage = String.valueOf(nonHeap.getUsed() / 1024);
-                
+
                 MemoryUsage memHeap = memory.getHeapMemoryUsage();
                 String heapUsage = String.valueOf(memHeap.getUsed() / 1024);
-                
+
                 String line = cpu + "," + heapUsage + "," + nonHeapUsage + "\n";
-                
+
                 Writer output = new BufferedWriter(new FileWriter(logPath, true));
                 output.append(line);
                 output.close();
-                
+
                 Thread.sleep(SAMPLING_RATE);
             }
-            
+
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(MonitorResources.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
 }

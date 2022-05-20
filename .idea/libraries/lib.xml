@@ -1,0 +1,29 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/netty-transport-4.0.33.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-http-4.0.33.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/org.apache.httpcomponents.httpclient_4.5.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/mapdb-1.0.8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-handler-4.0.33.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/org.apache.httpcomponents.httpcore_4.4.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-codec-1.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/HdrHistogram-2.1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/log4j-1.2.17.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.7.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/moquette-parser-commons-0.8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java-json.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-log4j12-1.7.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-logging-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/moquette-netty-parser-0.8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/moquette-broker-0.8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-codec-4.0.33.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/org.eclipse.paho.client.mqttv3-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-common-4.0.33.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/org.eclipse.paho.client.mqttv3-1.1.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/netty-buffer-4.0.33.Final.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

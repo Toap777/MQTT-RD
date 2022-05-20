@@ -1,0 +1,20 @@
+{
+    "device_id": "Pausenbrot",
+    "device_type": "led_switch",
+    "attributes": [
+        {
+            "type": "int32",
+            "object_id": "speed"
+        },
+        {
+            "type": "float",
+            "object_id": "temperature_C"
+        }
+    ],
+    "actions": [
+        {
+            "name": "drive",
+            "state": "active"
+        }
+    ]
+}

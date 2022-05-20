@@ -14,16 +14,25 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
+
 /**
- *
+ * This class provides sniffer discovery functionality over UDP multicast request.
  * @author eliseu
  */
 public class NetworkOperations {
+    //expected request body of message to discover sniffers
     private static final String REQUEST_SNIFFER = "anyonesniffer?";
+    //expected response body from discovered sniffers message
     private static final String RESPONSE_SNIFFER = "yes";
+    //Discovery message packet size in Byte
     private static final int PACKET_SIZE = 300;
-    private static final int TIMEOUT = 5000;    
-    
+    //Specifies how long to wait for an incoming response after sniffer discovery request
+    private static final int TIMEOUT = 5000;
+
+    /**
+     * Gets the IP4 address of the local machine
+     * @return ipAddress else null if there was an error
+     */
     public String getLocalIP(){
         String ipAddress = "";
         try {
@@ -43,11 +52,18 @@ public class NetworkOperations {
             }
         } catch (SocketException ex) {        
             System.err.println("Can not get the IP from this machine.");
+            return null;
         }
         
         return ipAddress;
     }
-    
+
+    /**
+     * Sends a multicast UDP request to the network to discover all available sniffers in the local network. If there is no sniffer wait for {@value TIMEOUT} ms.
+     * @param mAddress multicast address
+     * @param port port to send and recieve
+     * @return sniffers IP if there is another sniffer, else null
+     */
     public String sendPacketNetwork(String mAddress, int port){
         System.out.println("\nChecking sniffers in the network...");
         
