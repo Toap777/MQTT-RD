@@ -11,7 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * This class manages connections and "resource Collection" retrival from local dnd remote brokers and their associated sniffers.
+ * This class manages connections and "resource Collection" retrival from local dns remote brokers and their associated sniffers.
  * @author eliseu
  */
 public class ResourceCollectionSubscriber extends GenericClient{

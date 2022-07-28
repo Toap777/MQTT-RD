@@ -26,7 +26,7 @@ public class BasicClientMQTT {
     //configuration object containing all connection parameters. See: https://www.eclipse.org/paho/files/javadoc/org/eclipse/paho/client/mqttv3/MqttConnectOptions.html
     private final MqttConnectOptions conOptions = new MqttConnectOptions();
 
-    //Time to rety a connection or network action in ms.
+    //Time to retry a connection or network action in ms.
     private final int reconnectTime = 500;
 
     /**
@@ -36,6 +36,7 @@ public class BasicClientMQTT {
         conOptions.setCleanSession(true);
         conOptions.setKeepAliveInterval(60);
         conOptions.setAutomaticReconnect(true);
+        conOptions.setConnectionTimeout(30);
     }
     /**
      * Sets the Username and Password for the mqtt connection. After that conenction to be refreshed with {@see connectWithCallback}.
@@ -55,7 +56,7 @@ public class BasicClientMQTT {
      */
     public void connectWithCallback(String brokerURL, String clientID, MqttCallback callback) {
         //Represents a persistent data store, used to store outbound and inbound messages while they are in flight, enabling delivery to the QoS specified.
-        MemoryPersistence persistence = new MemoryPersistence();
+        MemoryPersistence persistence = new MemoryPersistence(); //TODO: Find out why this is used ?? Side-effect: Caches messages on each MQtt connection.
 
         try {
             client = new MqttClient(brokerURL, clientID, persistence);//Blocking mqtt client

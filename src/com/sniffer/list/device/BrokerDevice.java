@@ -26,7 +26,7 @@ public class BrokerDevice extends GenericClient{
     private static final String TOPIC_REGIST_DEVICE = "/registdevice";
 
     //messages per topic buffer
-    private static final int LIMIT_MESSAGES = 5;
+    private static final int QUEUE_MESSAGE_LIMIT = 5;
     //expected message data to kill the broker thread
     private static final String THREAD_KILL = "threadkill";
 
@@ -81,7 +81,7 @@ public class BrokerDevice extends GenericClient{
                     break;
                 default:
                     //data or ping messages
-                    data.newDataMessageDevice(message, topic, this.getTopicsMap(), LIMIT_MESSAGES);
+                    data.newDataMessageDevice(message, topic, this.getTopicsMap(), QUEUE_MESSAGE_LIMIT);
                     break;
             }
             

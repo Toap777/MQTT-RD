@@ -5,7 +5,7 @@
  */
 package com.sniffer.list.sniffer;
 
-import com.sniffer.list.device.DeviceThread;
+import com.sniffer.list.device.BrokerDeviceThread;
 import com.sniffer.list.sniffer.publish.PingThread;
 import com.sniffer.list.sniffer.publish.PublishResourceCollectionThread;
 import com.sniffer.list.json.ResourceCollectionReader;
@@ -84,9 +84,9 @@ public class SnifferThread implements Runnable{
                 }
                 
                 switch (deviceToken[0]) {
-                    //opens up a connection to new broker, if a device with associated broker joins.
+                    //opens up a connection to new broker, if a device with associated broker joins. TODO: Find out if its only for external brokers.
                     case THREAD_NEW_BROKER:
-                        (new Thread(new DeviceThread(resourceCollectionPath, snifferID, deviceToken[1], deviceToken[2], deviceToken[3], true), "DeviceThread")).start();
+                        (new Thread(new BrokerDeviceThread(resourceCollectionPath, snifferID, deviceToken[1], deviceToken[2], deviceToken[3], true), "DeviceThread")).start();
                         break;
                     default:
                         break;

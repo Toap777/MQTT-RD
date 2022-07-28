@@ -5,7 +5,7 @@
  */
 package com.sniffer.udp;
 
-import com.sniffer.list.device.DeviceThread;
+import com.sniffer.list.device.BrokerDeviceThread;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -14,7 +14,6 @@ import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.JSONException;
 
 /**
  * This class provides methods to receive register messages via udp for device and sniffers.
@@ -87,7 +86,7 @@ public class CheckNetworkThread implements Runnable {
                         System.out.println("Device IP: " + deviceIP + ", Port: 1883");
                         sendResponse(deviceIP, RESPONSE_DEVICE);
 
-                        (new Thread(new DeviceThread(resourceCollectionPath, snifferID, splitRequest[1], deviceIP, "1883", false), "DeviceThread")).start();
+                        (new Thread(new BrokerDeviceThread(resourceCollectionPath, snifferID, splitRequest[1], deviceIP, "1883", false), "DeviceThread")).start();
                         break;
                     default:
                         System.out.println("Message doesn't corresponds to the expected.");

@@ -96,7 +96,7 @@ public class RegistSniffer {
         ResourceCollectionReader reader = new ResourceCollectionReader(resourceCollectionPath);
 
         if(reader.findSniffer(snifferID) < 0){
-            System.out.println(String.format("Sniffer with %s wasn't registered in the resource collection.",snifferID));
+            System.out.println(String.format("Sniffer with id %s wasn't registered in the resource collection.",snifferID));
             
             //add sniffer to list
             System.out.println("Adding sniffer to the list...");

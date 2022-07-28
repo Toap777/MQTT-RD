@@ -12,11 +12,11 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.json.JSONException;
 
 /**
- * This class startup a device and synchronize the devices behaviour with the internal broker. It runs the sniffers main loop.
- * TODO: Revise class description with more exact definition of word "device".
+ * This an class representing an abstract device connected to the local broker. It uses DataManger instances to subscribe to topics of newly registered devices and to buffer messages.
+ * The Sniffer and Check Network Thread make heavy use of this class.
  * @author eliseu
  */
-public class DeviceThread implements Runnable{
+public class BrokerDeviceThread implements Runnable{
     private final String snifferID;
     private final String resourceCollectionPath;
     private final Boolean startedBySniffer;
@@ -37,7 +37,7 @@ public class DeviceThread implements Runnable{
      * @param devicePort devicePort
      * @param startedBySniffer if this device (broker) was started by sniffer
      */
-    public DeviceThread(String resourceCollectionPath, String snifferID, String deviceID, String deviceIP, String devicePort, Boolean startedBySniffer) {
+    public BrokerDeviceThread(String resourceCollectionPath, String snifferID, String deviceID, String deviceIP, String devicePort, Boolean startedBySniffer) {
         this.resourceCollectionPath = resourceCollectionPath;
         this.snifferID = snifferID;
         
@@ -78,7 +78,7 @@ public class DeviceThread implements Runnable{
                 switch (deviceToken[0]) {
                     //if a new broker registers it spawns another sniffer ?
                     case THREAD_NEW_BROKER:
-                        (new Thread(new DeviceThread(resourceCollectionPath, snifferID, deviceToken[1], deviceToken[2], deviceToken[3], true), "DeviceThread")).start();
+                        (new Thread(new BrokerDeviceThread(resourceCollectionPath, snifferID, deviceToken[1], deviceToken[2], deviceToken[3], true), "DeviceThread")).start();
                         break;
                     //kill this device thread
                     case THREAD_KILL:
@@ -91,7 +91,7 @@ public class DeviceThread implements Runnable{
             }         
             
         } catch (JSONException | InterruptedException | MqttException ex) {
-            Logger.getLogger(DeviceThread.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BrokerDeviceThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

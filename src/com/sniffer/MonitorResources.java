@@ -14,6 +14,8 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,12 +39,15 @@ public class MonitorResources implements Runnable{
 
             File file = new File(logPath);
             FileWriter fw = new FileWriter(file, false);
-            fw.append("Load Average,Heap,Non Heap\n");
+            fw.append("Time,Load Average,Heap,Non Heap\n");
             fw.close();
 
             MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
             OperatingSystemMXBean operatingSystem = ManagementFactory.getOperatingSystemMXBean();
             System.out.println("Logging local machineresources to path: " + logPath);
+
+            DateTimeFormatter dtf = DateTimeFormatter.ISO_TIME;
+
 
             while (true) {
                 String cpu = String.valueOf(operatingSystem.getSystemLoadAverage() / operatingSystem.getAvailableProcessors());
@@ -53,8 +58,7 @@ public class MonitorResources implements Runnable{
                 MemoryUsage memHeap = memory.getHeapMemoryUsage();
                 String heapUsage = String.valueOf(memHeap.getUsed() / 1024);
 
-                String line = cpu + "," + heapUsage + "," + nonHeapUsage + "\n";
-
+                String line = dtf.format(LocalDateTime.now()) + "," + cpu + "," + heapUsage + "," + nonHeapUsage + "\n";
                 Writer output = new BufferedWriter(new FileWriter(logPath, true));
                 output.append(line);
                 output.close();

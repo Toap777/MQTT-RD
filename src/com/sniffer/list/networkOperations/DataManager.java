@@ -150,15 +150,42 @@ public class DataManager {
     public void newDataMessageDevice(String message, String topic, Map<String, Queue<String>> topicsMap, int limitMessages) throws JSONException{
         if (topicsMap.containsKey(topic)) {
             Queue<String> topicData = topicsMap.get(topic);
-            topicData.add(message);
-            if (topicData.size() > limitMessages) {
-                while (topicData.size() > 1) {                    
-                    topicData.remove();
-                }
-                sendData(topicData.remove(), topic);
+            if (topicData.size() >= limitMessages) {
+                topicData.clear();
+            }else
+            {
+                topicData.add(message);
             }
-            topicsMap.put(topic, topicData);
+            sendData(message, topic);
+           topicsMap.put(topic, topicData);
         }
+
+           /*  if (topicsMap.containsKey(topic)) {
+                      Queue<String> topicData = topicsMap.get(topic);
+                      topicData.add(message);
+                      if (topicData.size() > limitMessages) {
+                          while (topicData.size() > 1) {
+                              topicData.remove();
+                          }
+                          sendData(topicData.remove(), topic);
+                     }
+                     topicsMap.put(topic, topicData);
+                 }*/
+
+        // Version 2: weniger I/O
+//        if (topicsMap.containsKey(topic)) {
+//            Queue<String> topicData = topicsMap.get(topic);
+//
+//            if (topicData.size() >= limitMessages) {
+//                topicData.clear();
+//                sendData(message, topic);
+//            }else
+//            {
+//                topicData.add(message);
+//            }
+//
+//            topicsMap.put(topic, topicData);
+//        }
     }
 
     /**
@@ -188,23 +215,44 @@ public class DataManager {
      * @param limitMessages defines how many messages get stored in a topics buffer
      */
     public void newDataMessageSniffer(String message, String topic, GenericClient internetBroker, Map<String, Queue<String>> topicsMap, int limitMessages){
-        if (topicsMap.containsKey(topic)) {
-            //get message queue (buffer) of topic
-            Queue<String> topicData = topicsMap.get(topic);
-            //add new message
-            topicData.add(message);
-            //if queue is full
-            if (topicData.size() > limitMessages) {
-                //delete until one message is left.
-                while (topicData.size() > 1) {                    
-                    topicData.remove();
+        
+          if (topicsMap.containsKey(topic)) {
+                      //get message queue (buffer) of topic
+                      Queue<String> topicData = topicsMap.get(topic);
+                      //add new message
+                      topicData.add(message);
+                      //if queue is full
+                      if (topicData.size() > limitMessages) {
+                          //delete until one message is left.
+                          while (topicData.size() > 1) {
+                              topicData.remove();
+                          }
+                          //remove and publish the last element. Should be the latest one.
+                          internetBroker.publish(topicData.remove(), topic);
+                      }
+                      //overwrite old buffer at topic map
+                      topicsMap.put(topic, topicData);
                 }
-                //remove and publish the last element. Should be the latest one.
-                internetBroker.publish(topicData.remove(), topic);
-            }
-            //overwrite old buffer at topic map
-            topicsMap.put(topic, topicData);
-        }        
+
+
+//        //Changed code because of one avoidable IO Access
+//        if (topicsMap.containsKey(topic)) {
+//            //get message queue (buffer) of topic
+//            Queue<String> topicData = topicsMap.get(topic);
+//            //add new message
+//            //if queue is full
+//            if (topicData.size() >= limitMessages) {
+//                //delete until one message is left.
+//                topicData.clear();
+//                //remove and publish the last element. Should be the latest one.
+//                internetBroker.publish(message, topic);
+//            }
+//            else
+//                topicData.add(message);
+//
+//            //overwrite old buffer at topic map
+//            topicsMap.put(topic, topicData);
+//        }
     }
 
     /**

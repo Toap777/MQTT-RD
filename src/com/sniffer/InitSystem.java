@@ -5,6 +5,8 @@
  */
 package com.sniffer;
 
+import com.hivemq.embedded.EmbeddedHiveMQ;
+import com.hivemq.embedded.EmbeddedHiveMQBuilder;
 import com.sniffer.list.networkOperations.ResourceCollectionSubscriber;
 import com.sniffer.list.networkOperations.RegistSniffer;
 import com.sniffer.list.sniffer.SnifferThread;
@@ -16,8 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
-import io.moquette.server.Server;
 import java.io.FileWriter;
+import java.nio.file.Path;
 import java.util.Properties;
 
 /**
@@ -29,6 +31,11 @@ public class InitSystem {
     private static final String MQTT_PORT = "1883";
     private String configPath = "/src/com/sniffer/resources/config1.json";
     private String logPath = "/src/com/sniffer/resources/logMessages.csv";
+
+    private final EmbeddedHiveMQBuilder embeddedHiveMQBuilder = EmbeddedHiveMQ.builder()
+            .withConfigurationFolder(Path.of("src/com/sniffer/resources/hiveMq_config"))
+            .withDataFolder(Path.of("src/com/sniffer/resources/hiveMq_embedded_data"))
+            .withExtensionsFolder(Path.of("src/com/sniffer/resources/hiveMq_logs"));
 
     //configures the system to use local hosts ip-address to start the mqtt broker on; possible values: autodetect, "" else uses ip: attribute of local broker in config file.
     private static final String IP_AUTO_DETECTED = "autodetected";
@@ -70,7 +77,7 @@ public class InitSystem {
         resourceCollectionPath = rootPath.concat(config.getString("list_path"));
         ResourceCollectionWriter writer = new ResourceCollectionWriter(resourceCollectionPath);
         writer.resetList();
-
+        System.out.println("Resource collection file initialized. Device registrations will be saved at: " + resourceCollectionPath);
 
         //start local mosquitto broker
         NetworkOperations net = new NetworkOperations();
@@ -85,7 +92,7 @@ public class InitSystem {
             if (ip.equals(IP_AUTO_DETECTED)) {
                 ip = net.getLocalIP();
             }
-            startMQTTBroker(ip, port);
+            startMQTTBroker(ip, port); //Where does a reference to this instance got saved ?
         }
 
 
@@ -145,28 +152,23 @@ public class InitSystem {
      * @param port broker port
      */
     private void startMQTTBroker(String ip, String port){
+        EmbeddedHiveMQ hiveMQ;
         try {
-            Properties prop = new Properties();
-            prop.setProperty("port", port);
-            prop.setProperty("host", ip);
-            prop.setProperty("allow_anonymous", "true");
-            
-            Server mqttBroker = new Server();
-
+            hiveMQ = embeddedHiveMQBuilder.build();
             System.out.println("\nStarting the MQTT (local network) broker...");
-            mqttBroker.startServer(prop);
-            
-            System.out.println("Moquette MQTT broker started, press ctrl-c to shutdown..");
+            hiveMQ.start().join();
+            System.out.println("HiveMQ MQTT broker started, press ctrl-c to shutdown..");
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
                 public void run() {
                     System.out.println("\nStopping moquette MQTT broker..");
-                    mqttBroker.stopServer();
+                    hiveMQ.stop().join();
                     System.out.println("Moquette MQTT broker stopped");
                 }
             });
-        } catch (IOException ex) {
+        } catch (final Exception ex) {
             System.err.println("Can't execute the MQTT broker.");
+            ex.printStackTrace();
         }
     }
 

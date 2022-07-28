@@ -34,18 +34,17 @@ public class PublishResourceCollectionThread implements Runnable{
      */
     @Override
     public void run() {
-        System.out.println("Publishing the list in this broker: " + broker.getClient().getCurrentServerURI());
+        System.out.println("Publishing sniffers resource collection to this broker: " + broker.getClient().getCurrentServerURI());
         ResourceCollectionReader reader = new ResourceCollectionReader(resourceCollectionPath);
         try {
-            while (true) {                
+            while (true) {
                 reader.readFile();
                 broker.publish(reader.getList().toString(), TOPIC_LIST);
                 Thread.sleep(PUBLISH_INTERVAL);
             }
-            
+
         } catch (InterruptedException ex) {
             Logger.getLogger(PublishResourceCollectionThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
 }

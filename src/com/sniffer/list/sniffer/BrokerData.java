@@ -15,7 +15,7 @@ import org.json.JSONException;
  */
 public class BrokerData extends GenericClient{
     private final GenericClient internetBroker;
-    
+    private final int QUEUE_MESSAGE_LIMIT = 5;
     private final DataManager manager;
 
     /**
@@ -37,7 +37,7 @@ public class BrokerData extends GenericClient{
      */
     @Override
     public void processMessage(String message, String topic) {
-        manager.newDataMessageSniffer(message, topic, internetBroker, this.getTopicsMap(), 3);
+        manager.newDataMessageSniffer(message, topic, internetBroker, this.getTopicsMap(), QUEUE_MESSAGE_LIMIT);
     }
 
     /**

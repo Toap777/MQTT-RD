@@ -59,14 +59,14 @@ public class SendThread implements Runnable{
     }
 
     /**
-     * Open an mqtt connection to url and sen message on topic. On error delete otherSniffer from ressoureCollection and notify via braodcast all other sniffers.
+     * Open an mqtt connection to url and sen message on topic. On error delete otherSniffer from resoureCollection and notify via braodcast all other sniffers.
      * Runs one time. TODO: Be more detailed.
      */
     @Override
     public void run() {
         // build connection
-        int sucess = mqtt.connect(url, snifferID + "BroadcastPublisher" + UUID.randomUUID());
-        if (sucess < 0) {                        
+        int success = mqtt.connect(url, snifferID + "BroadcastPublisher" + UUID.randomUUID());
+        if (success < 0) {
             try {
                 // self healing the sniffer network entries..
                 DeleteThings delete = new DeleteThings(resourceCollectionPath, snifferID);
