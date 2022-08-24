@@ -1,5 +1,8 @@
 # MQTT-RD
 
+The repositroy owner suggests the usage of hiveMQTT Broker instead of Eclipse moquetto, shown  in [this branch](https://github.com/Toap777/MQTT-RD/tree/hivemqbroker). After intensive testing during a thesis an exchange of the Broker provided the needed speed ans stability to process messages of more than 40 devices. Anyways there is still a issue with processing the ressourceColletion json file thtough mqtt devices, which is stored at the sniffers. When a mqtt device process this file to find new topics to subscribe it takes a growing and huge amount of time, which leads to delays in delivering messages...
+~ Toap777
+
 ### Prerequisites
 
 * **JDK** - Java Development Kit
