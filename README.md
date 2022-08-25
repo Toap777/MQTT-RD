@@ -20,6 +20,12 @@ ant -Dnb.internal.action.name=rebuild clean jar
 java -jar dist/Sniffer.jar
 ```
 
+### Execution
+While devleopment IntelliJ IDE was used to run this system. A "Run/Debug Configuration" with main class com.sniffer.Main was created and executed.
+
+## JVM Arguments
+The logging of heap usage of this software shows an very rapid growth of stored bytes. This is perhaps during the TCP connections to manage new subscribtions and to buffer some messages. The repository owner suggests to increase the Heap to atleast 500MB for 40 devices at start of the system to prevent frequenttly resizing at the Heap on system startup. Use -Xms500m as JVM option in IntelliJ or as parameter to "java -jar" command.
+
 ### Sniffer Configuration File
 
 In the path [/src/com/sniffer/resources/config1.json](/src/com/sniffer/resources/config1.json) you can find the configuration file were you can change the configuration settings.
