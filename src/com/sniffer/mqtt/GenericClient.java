@@ -55,7 +55,7 @@ public abstract class GenericClient extends BasicClientMQTT{
             System.out.println("Connection lost on instance \"" + getClient().getClientId()
                     + "\" with cause \"" + cause.getMessage() + "\" Reason code "
                     + ((MqttException) cause).getReasonCode() + "\" Cause \""
-                    + ((MqttException) cause).getCause() + "\"");
+                    + ((MqttException) cause).getCause() + "\" StackTrace:" + cause.getStackTrace()[0]);
             
             lostConnection();
             try {

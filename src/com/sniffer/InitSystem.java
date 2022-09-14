@@ -161,9 +161,9 @@ public class InitSystem {
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
                 public void run() {
-                    System.out.println("\nStopping moquette MQTT broker..");
+                    System.out.println("\nStopping  HiveMQ-broker..");
                     hiveMQ.stop().join();
-                    System.out.println("Moquette MQTT broker stopped");
+                    System.out.println("HiveMQ-broker stopped");
                 }
             });
         } catch (final Exception ex) {
